@@ -81,15 +81,16 @@ def xml_to_csv(path):
         tree = ET.parse(xml_file)
         root = tree.getroot()
         for member in root.findall('object'):
+          if member[0].text=='weed':
             value = (root.find('filename').text,
-                     int(root.find('size')[0].text),
-                     int(root.find('size')[1].text),
-                     member[0].text,
-                     int(member[4][0].text),
-                     int(member[4][1].text),
-                     int(member[4][2].text),
-                     int(member[4][3].text)
-                     )
+                 int(root.find('size').find('width').text),
+                 int(root.find('size').find('height').text),
+                 member[0].text,
+                 int(member.find("bndbox").find('xmin').text),
+                 int(member.find("bndbox").find('ymin').text),
+                 int(member.find("bndbox").find('xmax').text),
+                 int(member.find("bndbox").find('ymax').text)
+               )
             xml_list.append(value)
     column_name = ['filename', 'width', 'height',
                    'class', 'xmin', 'ymin', 'xmax', 'ymax']
@@ -98,7 +99,10 @@ def xml_to_csv(path):
 
 
 def class_text_to_int(row_label):
-    return label_map_dict[row_label]
+  if row_label=='weed':
+    return 1#label_map_dict[row_label]
+  else:
+    return 0
 
 
 def split(df, group):
@@ -166,3 +170,8 @@ def main(_):
 
 if __name__ == '__main__':
     tf.app.run()
+
+
+
+
+    
